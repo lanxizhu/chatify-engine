@@ -2,11 +2,18 @@ package router
 
 import (
 	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
+
+func TestRoute(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	mode := gin.Mode()
+	assert.Equal(t, mode, gin.TestMode)
+}
 
 func TestPingRoute(t *testing.T) {
 	router := Create()
