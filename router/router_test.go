@@ -1,6 +1,7 @@
 package router
 
 import (
+	"chatify-engine/pkg/database"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -16,7 +17,8 @@ func TestRoute(t *testing.T) {
 }
 
 func TestPingRoute(t *testing.T) {
-	router := Create()
+	db, _ := database.Create()
+	router := Create(db)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/ping", nil)

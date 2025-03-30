@@ -21,6 +21,10 @@ func (s *UserService) Register(username string, password string) error {
 		Password: password,
 	}
 
+	if err := user.HashPassword(); err != nil {
+		return errors.New(fmt.Sprintf("failed to hash password: %s", err))
+	}
+
 	err := s.userRepo.CreateUser(user)
 	if err != nil {
 		return errors.New(fmt.Sprintf("failed to create user: %s", err))
