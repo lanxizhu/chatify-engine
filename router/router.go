@@ -1,11 +1,15 @@
 package router
 
 import (
+	"chatify-engine/internal/handler"
+	"chatify-engine/internal/repository"
+	"chatify-engine/internal/service"
+	"database/sql"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-func Create() *gin.Engine {
+func Create(db *sql.DB) *gin.Engine {
 	gin.ForceConsoleColor()
 
 	router := gin.Default()
@@ -27,6 +31,15 @@ func Create() *gin.Engine {
 			"message": "pong",
 		})
 	})
+
+	userRepo := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepo)
+	userHandler := handler.NewUserHandler(userService)
+
+	publicGroup := router.Group("/api/v1")
+	{
+		publicGroup.POST("/register", userHandler.Register)
+	}
 
 	return router
 }

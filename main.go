@@ -8,14 +8,14 @@ import (
 
 func main() {
 
-	_, err := database.Create()
+	db, err := database.Create()
 
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		return
 	}
 
-	r := router.Create()
+	r := router.Create(db)
 
 	if err = r.Run(); err != nil {
 		fmt.Printf("Failed to start server: %v\n", err)
