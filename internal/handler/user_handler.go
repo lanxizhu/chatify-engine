@@ -49,7 +49,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 		return
 	}
 
-	user, err := h.userService.Login(request.Username, request.Password)
+	token, user, err := h.userService.Login(request.Username, request.Password)
 
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -65,5 +65,6 @@ func (h *UserHandler) Login(c *gin.Context) {
 		"created_at": user.CreatedTime,
 		"updated_at": user.UpdatedTime,
 		"last_login": user.LastTime,
+		"token":      token,
 	})
 }
