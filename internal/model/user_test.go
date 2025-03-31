@@ -23,3 +23,18 @@ func TestHashPassword(t *testing.T) {
 	}
 	t.Log("User HashPassword() passed")
 }
+
+func TestVerifyPassword(t *testing.T) {
+	input := "hello"
+
+	var user = &User{
+		Username: "admin",
+		Password: input,
+	}
+
+	_ = user.HashPassword()
+	if !user.VerifyPassword(input) {
+		t.Errorf("CheckPassword() got = %v, want %v", user.VerifyPassword(input), true)
+	}
+	t.Log("User CheckPassword() passed")
+}
