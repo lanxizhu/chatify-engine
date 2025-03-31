@@ -2,6 +2,7 @@ package router
 
 import (
 	"chatify-engine/internal/handler"
+	"chatify-engine/internal/middleware"
 	"chatify-engine/internal/repository"
 	"chatify-engine/internal/service"
 	"database/sql"
@@ -41,6 +42,10 @@ func Create(db *sql.DB) *gin.Engine {
 		publicGroup.POST("/register", userHandler.Register)
 		publicGroup.POST("/login", userHandler.Login)
 	}
+
+	protectedGroup := router.Group("/api/v1")
+	protectedGroup.Use(middleware.AuthMiddleware())
+	protectedGroup.GET("/validateToken", userHandler.ValidateToken)
 
 	return router
 }

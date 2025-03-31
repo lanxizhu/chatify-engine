@@ -68,3 +68,12 @@ func (h *UserHandler) Login(c *gin.Context) {
 		"token":      token,
 	})
 }
+
+func (h *UserHandler) ValidateToken(c *gin.Context) {
+	ID, _ := c.Get("user_id")
+	Username, _ := c.Get("username")
+	c.JSON(http.StatusOK, gin.H{
+		"id":       ID,
+		"username": Username,
+	})
+}
