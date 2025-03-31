@@ -41,3 +41,22 @@ func (r *UserRepository) CreateUser(user *model.User) error {
 
 	return nil
 }
+
+func (r *UserRepository) UpdateLoginTime(user *model.User) error {
+	query := "UPDATE user SET last_time = ? WHERE id = ?"
+	result, err := r.db.Exec(query, time.Now(), user.ID)
+	if err != nil {
+		return err
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if affected == 0 {
+		return sql.ErrNoRows
+	}
+
+	return nil
+}

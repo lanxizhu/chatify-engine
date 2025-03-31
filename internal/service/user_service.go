@@ -40,3 +40,24 @@ func (s *UserService) Register(username string, password string) error {
 
 	return nil
 }
+
+func (s *UserService) Login(username string, password string) (*model.User, error) {
+	user, err := s.userRepo.FindUserByUsername(username)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("failed to find user: %d", err))
+	}
+	if user == nil {
+		return nil, errors.New("user not found")
+	}
+
+	if !user.VerifyPassword(password) {
+		return nil, errors.New("invalid password")
+	}
+
+	err = s.userRepo.UpdateLoginTime(user)
+	if err != nil {
+		return nil, errors.New("failed to update login time")
+	}
+
+	return user, nil
+}

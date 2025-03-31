@@ -39,6 +39,7 @@ func Create(db *sql.DB) *gin.Engine {
 	publicGroup := router.Group("/api/v1")
 	{
 		publicGroup.POST("/register", userHandler.Register)
+		publicGroup.POST("/login", userHandler.Login)
 	}
 
 	return router
