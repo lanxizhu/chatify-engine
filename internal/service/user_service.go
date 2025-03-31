@@ -16,16 +16,24 @@ func NewUserService(userRepo *repository.UserRepository) *UserService {
 }
 
 func (s *UserService) Register(username string, password string) error {
-	user := &model.User{
+	user, err := s.userRepo.FindUserByUsername(username)
+	if err != nil {
+		return errors.New(fmt.Sprintf("failed to find user: %s", err))
+	}
+	if user != nil {
+		return errors.New("user already exists")
+	}
+
+	user = &model.User{
 		Username: username,
 		Password: password,
 	}
 
-	if err := user.HashPassword(); err != nil {
+	if err = user.HashPassword(); err != nil {
 		return errors.New(fmt.Sprintf("failed to hash password: %s", err))
 	}
 
-	err := s.userRepo.CreateUser(user)
+	err = s.userRepo.CreateUser(user)
 	if err != nil {
 		return errors.New(fmt.Sprintf("failed to create user: %s", err))
 	}
