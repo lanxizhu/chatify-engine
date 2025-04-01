@@ -21,7 +21,7 @@ func (r *UserRepository) FindUserByUsername(username string) (*model.User, error
 	row := r.db.QueryRow(query, username)
 
 	var user model.User
-	err := row.Scan(&user.ID, &user.Username, &user.Password, &user.Nickname, &user.CreatedTime, &user.UpdatedTime, &user.LastTime)
+	err := row.Scan(&user.ID, &user.Username, &user.Password, &user.Nickname, &user.Avatar, &user.CreatedTime, &user.UpdatedTime, &user.LastTime)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil // 用户不存在
@@ -56,6 +56,20 @@ func (r *UserRepository) UpdateLoginTime(user *model.User) error {
 
 	if affected == 0 {
 		return sql.ErrNoRows
+	}
+
+	return nil
+}
+
+func (r *UserRepository) UpdateAvatar(user *model.User) error {
+	query := "UPDATE user SET avatar = ? WHERE id = ?"
+	result, err := r.db.Exec(query, user.Avatar, user.ID)
+	if err != nil {
+		return err
+	}
+	_, err = result.RowsAffected()
+	if err != nil {
+		return err
 	}
 
 	return nil

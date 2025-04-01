@@ -67,3 +67,16 @@ func (s *UserService) Login(username string, password string) (string, *model.Us
 
 	return token, user, nil
 }
+
+func (s *UserService) UploadAvatar(id string, filename string) error {
+	user := &model.User{
+		ID:     id,
+		Avatar: &filename,
+	}
+	err := s.userRepo.UpdateAvatar(user)
+	if err != nil {
+		return errors.New(fmt.Sprintf("failed to find user: %s", err))
+	}
+
+	return nil
+}

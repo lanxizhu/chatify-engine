@@ -3,8 +3,11 @@ package handler
 import (
 	"chatify-engine/internal/model"
 	"chatify-engine/internal/service"
+	"crypto/sha256"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
 )
 
 type UserHandler struct {
@@ -62,6 +65,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 		"id":         user.ID,
 		"username":   user.Username,
 		"nickname":   user.Nickname,
+		"avatar":     "http://localhost:8888/media/avatars/" + *user.Avatar,
 		"created_at": user.CreatedTime,
 		"updated_at": user.UpdatedTime,
 		"last_login": user.LastTime,
@@ -75,5 +79,43 @@ func (h *UserHandler) ValidateToken(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"id":       ID,
 		"username": Username,
+	})
+}
+
+func (h *UserHandler) UploadAvatar(c *gin.Context) {
+
+	file, err := c.FormFile("file")
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "No file uploaded",
+		})
+		return
+	}
+
+	id, _ := c.Get("user_id")
+
+	shaId := sha256.Sum256([]byte(id.(string)))
+
+	filetype := strings.Split(file.Filename, ".")[1]
+	filename := fmt.Sprintf("%x.%s", shaId, filetype)
+
+	if err = c.SaveUploadedFile(file, "./uploads/avatars/"+filename); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to save file",
+		})
+		return
+	}
+
+	if err = h.userService.UploadAvatar(id.(string), filename); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"url":     "http://localhost:8888/media/avatars/" + filename,
+		"message": "Upload success",
 	})
 }

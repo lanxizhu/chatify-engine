@@ -17,6 +17,7 @@ func Create(db *sql.DB) *gin.Engine {
 
 	if mode := gin.Mode(); mode != gin.TestMode {
 		router.LoadHTMLGlob("templates/*")
+		router.Static("/media", "./uploads")
 	}
 
 	router.StaticFile("/favicon.ico", "./resources/favicon.ico")
@@ -46,6 +47,11 @@ func Create(db *sql.DB) *gin.Engine {
 	protectedGroup := router.Group("/api/v1")
 	protectedGroup.Use(middleware.AuthMiddleware())
 	protectedGroup.GET("/validateToken", userHandler.ValidateToken)
+
+	userGroup := protectedGroup.Group("/user")
+	{
+		userGroup.POST("/uploadAvatar", userHandler.UploadAvatar)
+	}
 
 	return router
 }
