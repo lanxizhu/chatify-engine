@@ -8,7 +8,7 @@ import (
 
 var (
 	JWTSecretKey = []byte("your-secret-key")
-	TokenExpire  = time.Second * 24
+	TokenExpire  = time.Minute * 60
 )
 
 type CustomClaims struct {
