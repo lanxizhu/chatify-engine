@@ -76,6 +76,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 func (h *UserHandler) ValidateToken(c *gin.Context) {
 	ID, _ := c.Get("user_id")
 	Username, _ := c.Get("username")
+	c.Get("nickname")
 	c.JSON(http.StatusOK, gin.H{
 		"id":       ID,
 		"username": Username,
@@ -117,5 +118,35 @@ func (h *UserHandler) UploadAvatar(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"url":     "http://localhost:8888/media/avatars/" + filename,
 		"message": "Upload success",
+	})
+}
+
+func (h *UserHandler) UpdateUser(c *gin.Context) {
+	var request model.User
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid request",
+		})
+		return
+	}
+
+	id, _ := c.Get("user_id")
+	request.ID = id.(string)
+
+	user, err := h.userService.UpdateUser(request)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	avatarURL := fmt.Sprintf("http://localhost:8888/media/avatars/%s", *user.Avatar)
+	user.Avatar = &avatarURL
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Update success",
+		"info":    user,
 	})
 }

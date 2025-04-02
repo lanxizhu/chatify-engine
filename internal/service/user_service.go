@@ -80,3 +80,17 @@ func (s *UserService) UploadAvatar(id string, filename string) error {
 
 	return nil
 }
+
+func (s *UserService) UpdateUser(user model.User) (*model.User, error) {
+	err := s.userRepo.UpdateUserInfo(&user)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("failed to find user: %s", err))
+	}
+
+	info, err := s.userRepo.FindUserByID(user.ID)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("failed to find user: %s", err))
+	}
+
+	return info, nil
+}

@@ -51,6 +51,7 @@ func Create(db *sql.DB) *gin.Engine {
 	userGroup := protectedGroup.Group("/user")
 	{
 		userGroup.POST("/uploadAvatar", userHandler.UploadAvatar)
+		userGroup.PUT("/updateInfo", userHandler.UpdateUser)
 	}
 
 	return router
