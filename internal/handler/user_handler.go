@@ -3,6 +3,7 @@ package handler
 import (
 	"chatify-engine/internal/model"
 	"chatify-engine/internal/service"
+	"chatify-engine/pkg/utils"
 	"crypto/sha256"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -63,7 +64,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 
 	var avatar *string
 	if user.Avatar != nil {
-		avatarURL := fmt.Sprintf("http://localhost:8888/media/avatars/%s", *user.Avatar)
+		avatarURL := fmt.Sprintf("%s/%s", utils.GetMediaUrl(c, utils.AvatarMode), *user.Avatar)
 		avatar = &avatarURL
 	}
 
@@ -131,7 +132,7 @@ func (h *UserHandler) UploadAvatar(c *gin.Context) {
 	filetype := strings.Split(file.Filename, ".")[1]
 	filename := fmt.Sprintf("%x.%s", shaId, filetype)
 
-	if err = c.SaveUploadedFile(file, "./uploads/avatars/"+filename); err != nil {
+	if err = c.SaveUploadedFile(file, fmt.Sprintf("./uploads/%s/%s", utils.AvatarMode, filename)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Failed to save file",
 		})
@@ -145,8 +146,9 @@ func (h *UserHandler) UploadAvatar(c *gin.Context) {
 		return
 	}
 
+	avatar := fmt.Sprintf("%s/%s", utils.GetMediaUrl(c, utils.AvatarMode), filename)
 	c.JSON(http.StatusOK, gin.H{
-		"url":     "http://localhost:8888/media/avatars/" + filename,
+		"url":     avatar,
 		"message": "Upload success",
 	})
 }
@@ -172,7 +174,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	avatarURL := fmt.Sprintf("http://localhost:8888/media/avatars/%s", *user.Avatar)
+	avatarURL := fmt.Sprintf("%s/%s", utils.GetMediaUrl(c, utils.AvatarMode), *user.Avatar)
 	user.Avatar = &avatarURL
 
 	c.JSON(http.StatusOK, gin.H{
