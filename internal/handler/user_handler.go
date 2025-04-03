@@ -61,11 +61,17 @@ func (h *UserHandler) Login(c *gin.Context) {
 		return
 	}
 
+	var avatar *string
+	if user.Avatar != nil {
+		avatarURL := fmt.Sprintf("http://localhost:8888/media/avatars/%s", *user.Avatar)
+		avatar = &avatarURL
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"id":         user.ID,
 		"username":   user.Username,
 		"nickname":   user.Nickname,
-		"avatar":     "http://localhost:8888/media/avatars/" + *user.Avatar,
+		"avatar":     &avatar,
 		"created_at": user.CreatedTime,
 		"updated_at": user.UpdatedTime,
 		"last_login": user.LastTime,
@@ -83,8 +89,32 @@ func (h *UserHandler) ValidateToken(c *gin.Context) {
 	})
 }
 
-func (h *UserHandler) UploadAvatar(c *gin.Context) {
+func (h *UserHandler) ChangePassword(c *gin.Context) {
+	var request model.ChangePassword
 
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid request",
+		})
+		return
+	}
+
+	id, _ := c.Get("user_id")
+	err := h.userService.ChangePassword(id.(string), request.OldPassword, request.NewPassword)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Password changed successfully",
+	})
+}
+
+func (h *UserHandler) UploadAvatar(c *gin.Context) {
 	file, err := c.FormFile("file")
 
 	if err != nil {

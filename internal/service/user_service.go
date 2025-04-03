@@ -68,6 +68,43 @@ func (s *UserService) Login(username string, password string) (string, *model.Us
 	return token, user, nil
 }
 
+func (s *UserService) ChangePassword(id string, oldPassword string, newPassword string) error {
+	user, err := s.userRepo.FindUserByID(id)
+	if err != nil {
+		return errors.New(fmt.Sprintf("failed to find user: %s", err))
+	}
+	if user == nil {
+		return errors.New("user not found")
+	}
+
+	if !user.VerifyPassword(oldPassword) {
+		return errors.New("invalid old password")
+	}
+
+	if len(newPassword) < 6 {
+		return errors.New("new password must be at least 6 characters long")
+	}
+
+	if len(newPassword) > 20 {
+		return errors.New("new password must be at most 20 characters long")
+	}
+
+	if user.VerifyPassword(newPassword) {
+		return errors.New("new password cannot be the same as old password")
+	}
+
+	user.Password = newPassword
+	if err = user.HashPassword(); err != nil {
+		return errors.New(fmt.Sprintf("failed to hash password: %s", err))
+	}
+
+	err = s.userRepo.UpdatePassword(user)
+	if err != nil {
+		return errors.New(fmt.Sprintf("failed to update password: %s", err))
+	}
+
+	return nil
+}
 func (s *UserService) UploadAvatar(id string, filename string) error {
 	user := &model.User{
 		ID:     id,

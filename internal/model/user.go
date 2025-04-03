@@ -26,6 +26,11 @@ type LoginUser struct {
 	Password string `json:"password"`
 }
 
+type ChangePassword struct {
+	OldPassword string `json:"old_password"`
+	NewPassword string `json:"new_password"`
+}
+
 type UploadAvatar struct {
 	ID   string `json:"id"`
 	File string `json:"file"`
