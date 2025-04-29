@@ -6,6 +6,7 @@ import (
 	"chatify-engine/internal/repository"
 	"chatify-engine/internal/service"
 	"database/sql"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -14,6 +15,10 @@ func Create(db *sql.DB) *gin.Engine {
 	gin.ForceConsoleColor()
 
 	router := gin.Default()
+
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	router.Use(cors.New(config))
 
 	if mode := gin.Mode(); mode != gin.TestMode {
 		router.LoadHTMLGlob("templates/*")
