@@ -210,8 +210,6 @@ func (h *UserHandler) SearchUsers(c *gin.Context) {
 			"username":   user.Username,
 			"nickname":   user.Nickname,
 			"avatar":     user.Avatar,
-			"created_at": user.CreatedTime,
-			"updated_at": user.UpdatedTime,
 			"last_login": user.LastTime,
 		})
 	}
@@ -219,4 +217,25 @@ func (h *UserHandler) SearchUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"users": userList,
 	})
+}
+
+func (h *UserHandler) FindUser(c *gin.Context) {
+	user, err := h.userService.FindUser(c.Query("keyword"))
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	if user == nil {
+		c.JSON(http.StatusOK, gin.H{
+			"user":    nil,
+			"message": "No user found",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
 }

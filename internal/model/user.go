@@ -38,6 +38,15 @@ type UploadAvatar struct {
 	File string `json:"file"`
 }
 
+type SimpleUser struct {
+	ID       string     `json:"id"`
+	Account  uint       `json:"account"`
+	Username string     `json:"username"`
+	Nickname *string    `json:"nickname"`
+	Avatar   *string    `json:"avatar"`
+	LastTime *time.Time `json:"last_login"`
+}
+
 func (u *User) HashPassword() error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {

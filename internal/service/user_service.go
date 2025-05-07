@@ -134,11 +134,20 @@ func (s *UserService) UpdateUser(user model.User) (*model.User, error) {
 	return info, nil
 }
 
-func (s *UserService) SearchUsers(name string) ([]*model.User, error) {
+func (s *UserService) SearchUsers(name string) ([]*model.SimpleUser, error) {
 	users, err := s.userRepo.SearchUsers(name)
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("failed to search users: %s", err))
 	}
 
 	return users, nil
+}
+
+func (s *UserService) FindUser(keyword string) (*model.SimpleUser, error) {
+	user, err := s.userRepo.FindUser(keyword)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }

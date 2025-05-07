@@ -124,17 +124,17 @@ func (r *UserRepository) UpdateUserInfo(user *model.User) error {
 	return nil
 }
 
-func (r *UserRepository) SearchUsers(name string) ([]*model.User, error) {
-	query := "SELECT * FROM user WHERE username LIKE ?"
+func (r *UserRepository) SearchUsers(name string) ([]*model.SimpleUser, error) {
+	query := "SELECT id, account, username, nickname, avatar, last_time FROM user WHERE username LIKE ?"
 	rows, err := r.db.Query(query, "%"+name+"%")
 	if err != nil {
 		return nil, err
 	}
 
-	var users []*model.User
+	var users []*model.SimpleUser
 	for rows.Next() {
-		user := &model.User{}
-		err = rows.Scan(&user.ID, &user.Account, &user.Username, &user.Password, &user.Nickname, &user.Avatar, &user.CreatedTime, &user.UpdatedTime, &user.LastTime)
+		user := &model.SimpleUser{}
+		err = rows.Scan(&user.ID, &user.Account, &user.Username, &user.Nickname, &user.Avatar, &user.LastTime)
 		if err != nil {
 			return nil, err
 		}
@@ -145,4 +145,22 @@ func (r *UserRepository) SearchUsers(name string) ([]*model.User, error) {
 	}
 
 	return users, nil
+}
+
+func (r *UserRepository) FindUser(keyword string) (*model.SimpleUser, error) {
+	query := "SELECT id, account, username, nickname, avatar, last_time FROM user WHERE account = ? OR username = ? ORDER BY CASE WHEN account = ? THEN 1 WHEN username = ? THEN 2 END ASC LIMIT 1"
+	row := r.db.QueryRow(query, keyword, keyword, keyword, keyword)
+
+	user := &model.SimpleUser{}
+
+	err := row.Scan(&user.ID, &user.Account, &user.Username, &user.Nickname, &user.Avatar, &user.LastTime)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return user, nil
 }
