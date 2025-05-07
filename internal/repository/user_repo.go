@@ -123,3 +123,26 @@ func (r *UserRepository) UpdateUserInfo(user *model.User) error {
 
 	return nil
 }
+
+func (r *UserRepository) SearchUsers(name string) ([]*model.User, error) {
+	query := "SELECT * FROM user WHERE username LIKE ?"
+	rows, err := r.db.Query(query, "%"+name+"%")
+	if err != nil {
+		return nil, err
+	}
+
+	var users []*model.User
+	for rows.Next() {
+		user := &model.User{}
+		err = rows.Scan(&user.ID, &user.Account, &user.Username, &user.Password, &user.Nickname, &user.Avatar, &user.CreatedTime, &user.UpdatedTime, &user.LastTime)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}

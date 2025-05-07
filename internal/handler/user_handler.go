@@ -183,3 +183,40 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 		"info":    user,
 	})
 }
+
+func (h *UserHandler) SearchUsers(c *gin.Context) {
+	name := c.Query("name")
+	users, err := h.userService.SearchUsers(name)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	if users == nil {
+		c.JSON(http.StatusOK, gin.H{
+			"users":   []interface{}{},
+			"message": "No users found",
+		})
+		return
+	}
+
+	var userList []gin.H
+	for _, user := range users {
+		userList = append(userList, gin.H{
+			"id":         user.ID,
+			"account":    user.Account,
+			"username":   user.Username,
+			"nickname":   user.Nickname,
+			"avatar":     user.Avatar,
+			"created_at": user.CreatedTime,
+			"updated_at": user.UpdatedTime,
+			"last_login": user.LastTime,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"users": userList,
+	})
+}

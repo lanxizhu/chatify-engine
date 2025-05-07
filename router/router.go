@@ -58,6 +58,7 @@ func Create(db *sql.DB) *gin.Engine {
 		userGroup.PUT("/changePassword", userHandler.ChangePassword)
 		userGroup.POST("/uploadAvatar", userHandler.UploadAvatar)
 		userGroup.PUT("/updateInfo", userHandler.UpdateUser)
+		userGroup.GET("/search", userHandler.SearchUsers)
 	}
 
 	return router
