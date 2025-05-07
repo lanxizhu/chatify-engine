@@ -1,6 +1,9 @@
 package model
 
 import (
+	"chatify-engine/pkg/utils"
+	"fmt"
+	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"math/rand"
 	"time"
@@ -63,4 +66,13 @@ func (u *User) VerifyPassword(password string) bool {
 
 func (u *User) GenerateAccount() {
 	u.Account = 10000000 + uint(rand.New(rand.NewSource(time.Now().UnixNano())).Intn(10000000))
+}
+
+func (u *SimpleUser) GetAvatarUrl(c *gin.Context) {
+	if u.Avatar == nil {
+		return
+	}
+
+	avatarURL := fmt.Sprintf("%s/%s", utils.GetMediaUrl(c, utils.AvatarMode), *u.Avatar)
+	u.Avatar = &avatarURL
 }

@@ -202,20 +202,12 @@ func (h *UserHandler) SearchUsers(c *gin.Context) {
 		return
 	}
 
-	var userList []gin.H
 	for _, user := range users {
-		userList = append(userList, gin.H{
-			"id":         user.ID,
-			"account":    user.Account,
-			"username":   user.Username,
-			"nickname":   user.Nickname,
-			"avatar":     user.Avatar,
-			"last_login": user.LastTime,
-		})
+		user.GetAvatarUrl(c)
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"users": userList,
+		"users": users,
 	})
 }
 
@@ -237,5 +229,6 @@ func (h *UserHandler) FindUser(c *gin.Context) {
 		return
 	}
 
+	user.GetAvatarUrl(c)
 	c.JSON(http.StatusOK, user)
 }

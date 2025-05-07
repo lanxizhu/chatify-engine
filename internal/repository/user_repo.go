@@ -37,7 +37,7 @@ func (r *UserRepository) FindUserByID(id string) (*model.User, error) {
 	row := r.db.QueryRow(query, id)
 
 	var user model.User
-	err := row.Scan(&user.ID, &user.Username, &user.Password, &user.Nickname, &user.Avatar, &user.CreatedTime, &user.UpdatedTime, &user.LastTime)
+	err := row.Scan(&user.ID, &user.Account, &user.Username, &user.Password, &user.Nickname, &user.Avatar, &user.CreatedTime, &user.UpdatedTime, &user.LastTime)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil // 用户不存在
