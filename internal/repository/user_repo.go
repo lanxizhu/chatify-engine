@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/google/uuid"
+	"strconv"
 	"time"
 )
 
@@ -149,11 +150,17 @@ func (r *UserRepository) SearchUsers(name string) ([]*model.SimpleUser, error) {
 
 func (r *UserRepository) FindUser(keyword string) (*model.SimpleUser, error) {
 	query := "SELECT id, account, username, nickname, avatar, last_time FROM user WHERE account = ? OR username = ? ORDER BY CASE WHEN account = ? THEN 1 WHEN username = ? THEN 2 END ASC LIMIT 1"
-	row := r.db.QueryRow(query, keyword, keyword, keyword, keyword)
+
+	account, err := strconv.ParseUint(keyword, 10, 32)
+	if err != nil {
+		account = 0
+	}
+	username := keyword
+	row := r.db.QueryRow(query, account, username, account, username)
 
 	user := &model.SimpleUser{}
 
-	err := row.Scan(&user.ID, &user.Account, &user.Username, &user.Nickname, &user.Avatar, &user.LastTime)
+	err = row.Scan(&user.ID, &user.Account, &user.Username, &user.Nickname, &user.Avatar, &user.LastTime)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
