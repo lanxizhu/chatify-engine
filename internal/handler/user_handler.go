@@ -70,6 +70,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"id":         user.ID,
+		"account":    user.Account,
 		"username":   user.Username,
 		"nickname":   user.Nickname,
 		"avatar":     &avatar,

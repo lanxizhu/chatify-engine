@@ -21,7 +21,7 @@ func (r *UserRepository) FindUserByUsername(username string) (*model.User, error
 	row := r.db.QueryRow(query, username)
 
 	var user model.User
-	err := row.Scan(&user.ID, &user.Username, &user.Password, &user.Nickname, &user.Avatar, &user.CreatedTime, &user.UpdatedTime, &user.LastTime)
+	err := row.Scan(&user.ID, &user.Account, &user.Username, &user.Password, &user.Nickname, &user.Avatar, &user.CreatedTime, &user.UpdatedTime, &user.LastTime)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil // 用户不存在
@@ -49,8 +49,8 @@ func (r *UserRepository) FindUserByID(id string) (*model.User, error) {
 }
 
 func (r *UserRepository) CreateUser(user *model.User) error {
-	query := "INSERT INTO user (id, username, password, nickname, created_time, updated_time) VALUES (?, ?, ?, ?, ?, ?) "
-	_, err := r.db.Exec(query, uuid.New().String(), user.Username, user.Password, user.Nickname, time.Now(), time.Now())
+	query := "INSERT INTO user (id, account, username, password, nickname, created_time, updated_time) VALUES (?, ?, ?, ?, ?, ?) "
+	_, err := r.db.Exec(query, uuid.New().String(), user.Account, user.Username, user.Password, user.Nickname, time.Now(), time.Now())
 	if err != nil {
 		return err
 	}

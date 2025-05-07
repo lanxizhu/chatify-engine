@@ -2,11 +2,13 @@ package model
 
 import (
 	"golang.org/x/crypto/bcrypt"
+	"math/rand"
 	"time"
 )
 
 type User struct {
 	ID          string     `json:"id"`
+	Account     uint       `json:"account"`
 	Username    string     `json:"username"`
 	Password    string     `json:"-"`
 	Nickname    *string    `json:"nickname"`
@@ -48,4 +50,8 @@ func (u *User) HashPassword() error {
 func (u *User) VerifyPassword(password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 	return err == nil
+}
+
+func (u *User) GenerateAccount() {
+	u.Account = 10000000 + uint(rand.New(rand.NewSource(time.Now().UnixNano())).Intn(10000000))
 }
