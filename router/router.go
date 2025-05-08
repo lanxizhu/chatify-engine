@@ -39,6 +39,9 @@ func Create(db *sql.DB) *gin.Engine {
 		})
 	})
 
+	wsHandler := handler.SetupWsHandler()
+	router.Handle(http.MethodGet, "/websocket/:id", wsHandler.Connect)
+
 	userRepo := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepo)
 	userHandler := handler.NewUserHandler(userService)
