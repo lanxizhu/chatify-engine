@@ -20,6 +20,8 @@ func Create(db *sql.DB) *gin.Engine {
 	config.AllowAllOrigins = true
 	router.Use(cors.New(config))
 
+	router.Use(middleware.LoggerMiddleware())
+
 	if mode := gin.Mode(); mode != gin.TestMode {
 		router.LoadHTMLGlob("templates/*")
 		router.Static("/media", "./uploads")
@@ -40,6 +42,9 @@ func Create(db *sql.DB) *gin.Engine {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
 		})
+
+		logger := middleware.GetLoggerFromContext(c)
+		logger.Info("Ping request received")
 	})
 
 	wsHandler := handler.SetupWsHandler()
