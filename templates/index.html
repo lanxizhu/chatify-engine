@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chatify Engine</title>
+
+  <script type="module">
+    fetch("/ping").then((res) => {
+      console.log(res)
+    })
+
+    const connnect = new WebSocket('/websocket/3553028d-a33b-42a7-9cd7-7a9b0c880192');
+
+    connnect.onopen = () => {
+      console.log('WebSocket connection established');
+      connnect.send('ping');
+    }
+  </script>
+</head>
+<body>
+  <h1>Hello, World!</h1>
+</body>
+</html>

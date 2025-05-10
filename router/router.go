@@ -23,6 +23,9 @@ func Create(db *sql.DB) *gin.Engine {
 	if mode := gin.Mode(); mode != gin.TestMode {
 		router.LoadHTMLGlob("templates/*")
 		router.Static("/media", "./uploads")
+		router.GET("/index", func(c *gin.Context) {
+			c.HTML(http.StatusOK, "index.html", nil)
+		})
 	}
 
 	router.StaticFile("/favicon.ico", "./resources/favicon.ico")
