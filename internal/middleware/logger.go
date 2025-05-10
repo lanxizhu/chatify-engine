@@ -3,6 +3,7 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/mssola/useragent"
 	"go.uber.org/zap"
 )
 
@@ -27,9 +28,13 @@ func LoggerMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// create a new logger instance for each request
 		requestID := uuid.New().String()
+		ua := useragent.New(c.Request.UserAgent())
+		browser, _ := ua.Browser()
 		requestLogger := globalLogger.With(
 			zap.String("request_id", requestID),
 			zap.String("client_ip", c.ClientIP()),
+			zap.String("Browser", browser),
+			zap.String("Os", ua.OS()),
 			zap.String("method", c.Request.Method),
 			zap.String("path", c.Request.URL.Path),
 		)
