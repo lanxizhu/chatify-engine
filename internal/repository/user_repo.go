@@ -171,3 +171,26 @@ func (r *UserRepository) FindUser(keyword string) (*model.SimpleUser, error) {
 
 	return user, nil
 }
+
+func (r *UserRepository) FindAll() ([]*model.SimpleUser, error) {
+	query := "SELECT id, account, username, nickname, avatar, last_time FROM user"
+	rows, err := r.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	var users []*model.SimpleUser
+	for rows.Next() {
+		user := &model.SimpleUser{}
+		err = rows.Scan(&user.ID, &user.Account, &user.Username, &user.Nickname, &user.Avatar, &user.LastTime)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
