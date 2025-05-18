@@ -1,0 +1,25 @@
+package model
+
+import (
+	"chatify-engine/pkg/utils"
+	"fmt"
+	"github.com/gin-gonic/gin"
+)
+
+type Friend struct {
+	ID       string  `json:"id"`
+	Account  uint    `json:"account"`
+	Username string  `json:"username"`
+	Nickname *string `json:"nickname"`
+	Avatar   *string `json:"avatar"`
+	Remark   *string `json:"remark"`
+}
+
+func (f *Friend) GetAvatarUrl(c *gin.Context) {
+	if f.Avatar == nil {
+		return
+	}
+
+	avatarURL := fmt.Sprintf("%s/%s", utils.GetMediaUrl(c, utils.AvatarMode), *f.Avatar)
+	f.Avatar = &avatarURL
+}

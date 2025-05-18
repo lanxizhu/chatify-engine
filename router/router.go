@@ -73,5 +73,14 @@ func Create(db *sql.DB) *gin.Engine {
 		userGroup.GET("/find", userHandler.FindUser)
 	}
 
+	friendRepo := repository.NewFriendRepository(db)
+	friendService := service.NewFriendService(friendRepo)
+	friendHandler := handler.NewFriendHandler(friendService)
+
+	friendGroup := protectedGroup.Group("/friend")
+	{
+		friendGroup.GET("/", friendHandler.GetFriends)
+	}
+
 	return router
 }
