@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"chatify-engine/internal/middleware"
 	"chatify-engine/internal/model"
 	"chatify-engine/internal/service"
 	"chatify-engine/pkg/utils"
@@ -68,6 +69,8 @@ func (h *UserHandler) Login(c *gin.Context) {
 		avatar = &avatarURL
 	}
 
+	logger := middleware.GetLoggerFromContext(c)
+	logger.Info("User login")
 	c.JSON(http.StatusOK, gin.H{
 		"id":         user.ID,
 		"account":    user.Account,
