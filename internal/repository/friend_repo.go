@@ -3,6 +3,7 @@ package repository
 import (
 	"chatify-engine/internal/model"
 	"database/sql"
+	"errors"
 )
 
 type FriendRepository struct {
@@ -49,4 +50,31 @@ func (r *FriendRepository) FindFriendsByUserID(userID string) ([]*model.Friend, 
 	}
 
 	return friends, nil
+}
+
+func (r *FriendRepository) CheckFriendRequest(request *model.RequestFriend) (bool, error) {
+	query := "SELECT CASE WHEN COUNT(*) > 0 THEN 'true' ELSE 'false'END FROM friend_request WHERE user = ? AND friend = ?"
+	row := r.db.QueryRow(query, request.UserID, request.FriendID)
+
+	var isExists bool
+	err := row.Scan(&isExists)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return isExists, nil
+		}
+		return isExists, err
+	}
+
+	return isExists, nil
+}
+
+func (r *FriendRepository) InsertFriendRequest(request *model.RequestFriend) error {
+	query := "INSERT INTO friend_request (user, friend, remark) VALUES (?, ?, ?)"
+	_, err := r.db.Exec(query, request.UserID, request.FriendID, &request.Remark)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

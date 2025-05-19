@@ -80,6 +80,7 @@ func Create(db *sql.DB) *gin.Engine {
 	friendGroup := protectedGroup.Group("/friend")
 	{
 		friendGroup.GET("/", friendHandler.GetFriends)
+		friendGroup.POST("/:friend_id", friendHandler.AddFriend)
 	}
 
 	return router

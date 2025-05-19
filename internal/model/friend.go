@@ -15,6 +15,12 @@ type Friend struct {
 	Remark   *string `json:"remark"`
 }
 
+type RequestFriend struct {
+	UserID   string  `json:"user_id"`
+	FriendID string  `json:"friend_id"`
+	Remark   *string `json:"remark"`
+}
+
 func (f *Friend) GetAvatarUrl(c *gin.Context) {
 	if f.Avatar == nil {
 		return
