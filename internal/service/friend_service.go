@@ -36,3 +36,21 @@ func (s *FriendService) RequestFriend(request *model.RequestFriend) error {
 	}
 	return nil
 }
+
+func (s *FriendService) HandleRequest(action *model.HandleRequest) error {
+	isExist, err := s.friendRepo.CheckFriendRequestByID(action.ID)
+
+	if err != nil {
+		return err
+	}
+
+	if !isExist {
+		return errors.New("friend request not found")
+	}
+
+	if err = s.friendRepo.UpdateFriendRequest(action.ID, action.Status); err != nil {
+		return err
+	}
+
+	return nil
+}

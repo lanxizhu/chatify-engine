@@ -71,3 +71,36 @@ func (h *FriendHandler) AddFriend(c *gin.Context) {
 		"message": "Friend request sent successfully",
 	})
 }
+
+func (h *FriendHandler) HandleRequest(c *gin.Context) {
+	id := c.Param("request_id")
+
+	action := &model.HandleRequest{
+		ID: id,
+	}
+
+	if err := c.ShouldBindJSON(action); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid request",
+		})
+		return
+	}
+
+	if action.Status == "" || action.Status != "accept" && action.Status != "reject" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid request status",
+		})
+		return
+	}
+
+	if err := h.friendService.HandleRequest(action); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to handle request: " + err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Request handled successfully",
+	})
+}
