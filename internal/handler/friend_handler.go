@@ -72,6 +72,29 @@ func (h *FriendHandler) AddFriend(c *gin.Context) {
 	})
 }
 
+func (h *FriendHandler) GetFriendRequests(c *gin.Context) {
+	id, _ := c.Get("user_id")
+	requests, err := h.friendService.GetFriendRequests(id.(string))
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to retrieve friend requests: " + err.Error(),
+		})
+		return
+	}
+
+	if len(requests) == 0 {
+		c.JSON(http.StatusOK, gin.H{
+			"requests": []interface{}{},
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"requests": requests,
+	})
+}
+
 func (h *FriendHandler) HandleRequest(c *gin.Context) {
 	id := c.Param("request_id")
 

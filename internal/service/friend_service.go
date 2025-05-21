@@ -37,6 +37,16 @@ func (s *FriendService) RequestFriend(request *model.RequestFriend) error {
 	return nil
 }
 
+func (s *FriendService) GetFriendRequests(userID string) ([]*model.FriendRequest, error) {
+	request, err := s.friendRepo.SearchFriendRequest(userID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return request, nil
+}
+
 func (s *FriendService) HandleRequest(action *model.HandleRequest) error {
 	isExist, err := s.friendRepo.CheckFriendRequestByID(action.ID)
 

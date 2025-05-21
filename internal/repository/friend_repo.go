@@ -105,3 +105,24 @@ func (r *FriendRepository) UpdateFriendRequest(id string, status string) error {
 
 	return nil
 }
+
+func (r *FriendRepository) SearchFriendRequest(id string) ([]*model.FriendRequest, error) {
+	query := "SELECT id, CASE WHEN user = ? THEN friend WHEN friend = ? THEN user END AS user, remark, status, CASE WHEN user = ? THEN 'send' WHEN friend = ? THEN 'receive' END AS type FROM friend_request WHERE user = ? OR friend = ?"
+	rows, err := r.db.Query(query, id, id, id, id, id, id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var requests []*model.FriendRequest
+
+	for rows.Next() {
+		var request model.FriendRequest
+		if err = rows.Scan(&request.ID, &request.User, &request.Remark, &request.Status, &request.Type); err != nil {
+			return nil, err
+		}
+		requests = append(requests, &request)
+	}
+
+	return requests, nil
+}

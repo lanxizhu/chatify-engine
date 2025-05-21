@@ -81,6 +81,7 @@ func Create(db *sql.DB) *gin.Engine {
 	{
 		friendGroup.GET("/", friendHandler.GetFriends)
 		friendGroup.POST("/:friend_id", friendHandler.AddFriend)
+		friendGroup.GET("/requests", friendHandler.GetFriendRequests)
 		friendGroup.PUT("/:request_id", friendHandler.HandleRequest)
 	}
 
