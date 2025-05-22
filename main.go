@@ -2,18 +2,20 @@ package main
 
 import (
 	"chatify-engine/pkg/database"
+	"chatify-engine/pkg/redis"
 	"chatify-engine/router"
 	"fmt"
 )
 
 func main() {
-
 	db, err := database.Create()
 
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		return
 	}
+
+	redis.SetupRdb()
 
 	r := router.Create(db)
 

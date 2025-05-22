@@ -4,6 +4,7 @@ import (
 	"chatify-engine/internal/middleware"
 	"chatify-engine/internal/model"
 	"chatify-engine/internal/service"
+	"chatify-engine/pkg/redis"
 	"chatify-engine/pkg/utils"
 	"crypto/sha256"
 	"fmt"
@@ -71,6 +72,10 @@ func (h *UserHandler) Login(c *gin.Context) {
 
 	logger := middleware.GetLoggerFromContext(c)
 	logger.Info("User login")
+
+	rdb := redis.GetRdb()
+	rdb.Set(c, "token:"+user.ID, token, 0)
+
 	c.JSON(http.StatusOK, gin.H{
 		"id":         user.ID,
 		"account":    user.Account,
