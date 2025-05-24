@@ -76,6 +76,8 @@ func (h *UserHandler) Login(c *gin.Context) {
 	rdb := redis.GetRdb()
 	rdb.Set(c, "token:"+user.ID, token, 0)
 
+	SendToClient(user.ID, "You have logged in.")
+
 	c.JSON(http.StatusOK, gin.H{
 		"id":         user.ID,
 		"account":    user.Account,

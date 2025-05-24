@@ -142,3 +142,13 @@ func (ws *WsHandler) Connect(c *gin.Context) {
 		}
 	}
 }
+
+func SendToClient(id string, connect string) {
+	conn := clients[id]
+	if conn != nil {
+		if err := conn.WriteMessage(websocket.TextMessage, []byte(connect)); err != nil {
+			log.Println(err)
+			return
+		}
+	}
+}
