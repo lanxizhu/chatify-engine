@@ -37,9 +37,7 @@ func (h *FriendHandler) GetFriends(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"friends": friends,
-	})
+	c.JSON(http.StatusOK, friends)
 }
 
 func (h *FriendHandler) AddFriend(c *gin.Context) {
@@ -90,9 +88,11 @@ func (h *FriendHandler) GetFriendRequests(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"requests": requests,
-	})
+	for _, request := range requests {
+		request.GetAvatarUrl(c)
+	}
+
+	c.JSON(http.StatusOK, requests)
 }
 
 func (h *FriendHandler) HandleRequest(c *gin.Context) {

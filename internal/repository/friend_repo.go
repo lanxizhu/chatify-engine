@@ -114,6 +114,17 @@ func (r *FriendRepository) SearchFriendRequest(id string) ([]*model.FriendReques
 		return nil, err
 	}
 
+	usersMap := make(map[string]*model.SimpleUser)
+	userRepo := NewUserRepository(r.db)
+
+	if simpleUsers, err := userRepo.FindAll(); err != nil {
+		return nil, err
+	} else {
+		for _, user := range simpleUsers {
+			usersMap[user.ID] = user
+		}
+	}
+
 	var requests []*model.FriendRequest
 
 	for rows.Next() {
@@ -121,6 +132,16 @@ func (r *FriendRepository) SearchFriendRequest(id string) ([]*model.FriendReques
 		if err = rows.Scan(&request.ID, &request.User, &request.Remark, &request.Status, &request.Type); err != nil {
 			return nil, err
 		}
+
+		if user, exists := usersMap[request.User]; exists {
+			request.Username = user.Username
+			request.Account = user.Account
+			request.Nickname = user.Nickname
+			request.Avatar = user.Avatar
+		} else {
+			return nil, errors.New("user not found for request: " + request.ID)
+		}
+
 		requests = append(requests, &request)
 	}
 

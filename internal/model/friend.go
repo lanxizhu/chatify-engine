@@ -22,11 +22,15 @@ type RequestFriend struct {
 }
 
 type FriendRequest struct {
-	ID     string  `json:"id"`
-	User   string  `json:"user"`
-	Remark *string `json:"remark"`
-	Status string  `json:"status"`
-	Type   string  `json:"type"`
+	ID       string  `json:"id"`
+	User     string  `json:"-"`
+	Account  uint    `json:"account"`
+	Username string  `json:"username"`
+	Nickname *string `json:"nickname"`
+	Avatar   *string `json:"avatar"`
+	Remark   *string `json:"remark"`
+	Status   string  `json:"status"`
+	Type     string  `json:"type"`
 }
 
 type HandleRequest struct {
@@ -35,6 +39,15 @@ type HandleRequest struct {
 }
 
 func (f *Friend) GetAvatarUrl(c *gin.Context) {
+	if f.Avatar == nil {
+		return
+	}
+
+	avatarURL := fmt.Sprintf("%s/%s", utils.GetMediaUrl(c, utils.AvatarMode), *f.Avatar)
+	f.Avatar = &avatarURL
+}
+
+func (f *FriendRequest) GetAvatarUrl(c *gin.Context) {
 	if f.Avatar == nil {
 		return
 	}
